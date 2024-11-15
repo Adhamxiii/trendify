@@ -1,8 +1,11 @@
-import React from "react";
+'use client'
+
+import React, { useEffect, useRef } from "react";
 import { X, ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
 import Image from "next/image";
 import { useCart } from "../context/CartContext";
 import { useOrders } from "../context/OrderContext";
+import { gsap } from "gsap";
 
 export const CartPreview = ({ isOpen, onClose }) => {
   const {
@@ -13,6 +16,35 @@ export const CartPreview = ({ isOpen, onClose }) => {
     decreaseQuantity,
   } = useCart();
   const { addOrder } = useOrders();
+
+  const cartRef = useRef(null);
+
+  useEffect(() => {
+    const cart = cartRef.current;
+
+    const tl = gsap.timeline({
+      defaults: { ease: "power3.out" },
+      paused: true,
+    });
+
+    if (isOpen) {
+      tl.to(cart, {
+        x: 0,
+        duration: 0.2,
+        ease: "power3.out",
+      });
+    } else {
+      tl.to(cart, {
+        x: "100%",
+        duration: 0.3,
+        ease: "power3.inOut",
+      });
+    }
+
+    tl.play();
+
+    return () => tl.kill();
+  }, [isOpen]);
 
   const handleCheckout = () => {
     addOrder({ items: cartItems, date: new Date().toISOString() });
@@ -26,6 +58,7 @@ export const CartPreview = ({ isOpen, onClose }) => {
       )}
 
       <div
+        ref={cartRef}
         className={`fixed inset-y-0 right-0 w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}

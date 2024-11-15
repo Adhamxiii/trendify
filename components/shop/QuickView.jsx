@@ -1,3 +1,5 @@
+'use client'
+
 import { Heart, ShoppingCart, X } from "lucide-react";
 import Image from "next/image";
 import { useCart } from "../context/CartContext";

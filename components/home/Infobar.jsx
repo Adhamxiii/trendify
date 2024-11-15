@@ -1,3 +1,5 @@
+"use client";
+
 import { Truck, ShieldCheck, RotateCcw, CreditCard } from "lucide-react";
 
 const features = [
@@ -27,14 +29,41 @@ const features = [
   },
 ];
 
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useEffect, useRef } from "react";
+
+gsap.registerPlugin(ScrollTrigger);
+
 const Infobar = () => {
+  const infoRef = useRef(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.from(".info-box", {
+        x: 50,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        scrollTrigger: {
+          trigger: infoRef.current,
+          start: "top center+=100",
+        },
+      });
+    }, infoRef);
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section className="container mx-auto px-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <section className="container mx-auto px-4 ">
+      <div
+        ref={infoRef}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+      >
         {features.map((feature, index) => (
           <div
             key={feature.title}
-            className="relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+            className="info-box relative overflow-hidden bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300"
           >
             <div className="p-6">
               <div className="flex items-center gap-4">

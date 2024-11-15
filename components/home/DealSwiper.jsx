@@ -12,12 +12,19 @@ import ProductDetail from "@/data/productsDetails";
 import { ShopContext } from "../context/ShopContext";
 import { QuickView } from "../shop/QuickView";
 import { useCart } from "../context/CartContext";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useRef } from "react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const DealSwiper = () => {
   const [deal, setDeal] = useState([]);
   const { products, closeQuickView, quickViewProduct, openQuickView } =
     useContext(ShopContext);
   const { addToCart } = useCart();
+
+  const containerRef = useRef(null);
 
   useEffect(() => {
     const filterProduct = () => {
@@ -29,9 +36,31 @@ const DealSwiper = () => {
     filterProduct();
   }, [products]);
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top center+=100",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      timeline.from(".deal-card", {
+        x: -50,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.2,
+        ease: "power2.out",
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <>
-      <div className="py-5 px-[30px]">
+      <div className="py-5 px-[30px]" ref={containerRef}>
         <h3 className="text-2xl font-bold text-gray-900">Deals of the day</h3>
         <div className="flex justify-center p-5">
           <Swiper
@@ -51,7 +80,7 @@ const DealSwiper = () => {
                 <div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
+                  className="deal-card bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
                 >
                   <div className="relative group">
                     <div className="aspect-[4/3] relative overflow-hidden">

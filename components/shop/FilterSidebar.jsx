@@ -1,4 +1,7 @@
+"use client";
+
 import { X } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 export const FilterSidebar = ({
   isOpen,
@@ -7,8 +10,30 @@ export const FilterSidebar = ({
   onFilterChange,
   categories,
 }) => {
+  const sidebarRef = useRef(null);
+
+  useEffect(() => {
+    // Event listener to detect clicks outside the sidebar
+    const handleClickOutside = (e) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(e.target)) {
+        onClose(); // Close the sidebar when clicking outside
+      }
+    };
+
+    if (isOpen) {
+      // Add event listener when the sidebar is open
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      // Clean up the event listener when the component unmounts or the modal closes
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
   return (
     <div
+      ref={sidebarRef}
       className={`fixed inset-y-0 left-0 w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out z-40 lg:relative lg:transform-none lg:w-64 ${
         isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       }`}

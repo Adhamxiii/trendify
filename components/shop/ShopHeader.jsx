@@ -1,3 +1,5 @@
+'use client'
+
 import { ChevronDown, Filter } from "lucide-react";
 
 export const ShopHeader = ({

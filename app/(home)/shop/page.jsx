@@ -1,9 +1,13 @@
-import { ShopPage } from "@/components/shop/ShopPage"
+"use client";
+
+import dynamic from "next/dynamic";
+
+const ShopPage = dynamic(() => import("@/components/shop/ShopPage"), {
+  ssr: false,
+});
 
 const page = () => {
-  return (
-    <ShopPage />
-  )
-}
+  return <ShopPage />;
+};
 
-export default page
+export default page;

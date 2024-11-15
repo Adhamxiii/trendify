@@ -9,9 +9,13 @@ import {
   Watch,
 } from "lucide-react";
 
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const categoryConfigs = {
   gaming: { icon: Gamepad2, color: "from-purple-500 to-indigo-500" },
@@ -24,6 +28,33 @@ const Category = () => {
   const { categories } = useContext(ShopContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const categoryRef = useRef(null);
+
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      const ctx = gsap.context(() => {
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: categoryRef.current,
+            start: "top center+=100",
+            toggleActions: "play none none reverse",
+          },
+        });
+
+        timeline.from(".category-box", {
+          y: 30,
+          opacity: 0,
+          scale: 0.9,
+          duration: 0.5,
+          stagger: 0.2,
+          ease: "power2.out",
+        });
+      }, categoryRef);
+
+      return () => ctx.revert();
+    }
+  }, [categories]);
 
   useEffect(() => {
     if (categories && categories.length > 0) {
@@ -60,7 +91,10 @@ const Category = () => {
           <h2 className="text-2xl font-bold text-gray-900">Shop by Category</h2>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div
+          ref={categoryRef}
+          className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"
+        >
           {categories.map((category) => {
             const { icon: CategoryIcon, color } =
               categoryConfigs[category.name] || {};
@@ -70,7 +104,7 @@ const Category = () => {
               <Link
                 key={category.$id}
                 href={`/shop`}
-                className="group relative bg-white rounded-2xl p-4 hover:shadow-lg transition-all duration-300 overflow-hidden"
+                className="category-box group relative bg-white rounded-2xl p-4 hover:shadow-lg transition-all duration-300 overflow-hidden"
               >
                 <div
                   className={`absolute inset-0 bg-gradient-to-br ${color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}

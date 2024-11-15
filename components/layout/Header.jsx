@@ -1,27 +1,28 @@
 "use client";
-import Link from "next/link";
-import { useContext, useEffect, useRef, useState } from "react";
-import {
-  LayoutGrid,
-  User,
-  Shirt,
-  Plus,
-  ShoppingCart,
-  X,
-  Menu,
-  Search,
-  Watch,
-  Glasses,
-  ShoppingBasket,
-  LogOut,
-} from "lucide-react";
-import { CategoryDropdown } from "./CategoryDropdown";
-import { AdBar } from "./AdBar";
-import { useRouter } from "next/navigation";
 import { account } from "@/lib/appwrite";
+import {
+  Gamepad2,
+  LayoutGrid,
+  LogOut,
+  Menu,
+  Plus,
+  Search,
+  Shirt,
+  ShoppingBasket,
+  ShoppingCart,
+  Sofa,
+  User,
+  Watch,
+  X,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useContext, useEffect, useRef, useState } from "react";
+import { useCart } from "../context/CartContext";
 import { ShopContext } from "../context/ShopContext";
 import { CartPreview } from "../shop/CartPreview";
-import { useCart } from "../context/CartContext";
+import { AdBar } from "./AdBar";
+import { CategoryDropdown } from "./CategoryDropdown";
 
 const navItems = [
   { name: "Home", href: "/" },
@@ -30,6 +31,14 @@ const navItems = [
   { name: "Contact", href: "/contact" },
 ];
 
+const categoryConfigs = {
+  gaming: { icon: Gamepad2, color: "text-indigo-500" },
+  clothing: { icon: Shirt, color: "text-rose-500" },
+  watches: { icon: Watch, color: "text-orange-500" },
+  groceries: { icon: ShoppingBasket, color: "text-emerald-500" },
+  furniture: { icon: Sofa, color: "text-cyan-500" },
+};
+
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -37,7 +46,7 @@ const Header = () => {
   const [session, setSession] = useState(null);
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
 
-  const {cartItems} = useCart();
+  const { cartItems } = useCart();
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -46,7 +55,7 @@ const Header = () => {
   const containerRef = useRef(null);
   const userIconRef = useRef(null);
 
-  const { isCartOpen, toggleCart } = useContext(ShopContext);
+  const { isCartOpen, toggleCart, categories } = useContext(ShopContext);
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -270,34 +279,21 @@ const Header = () => {
                       : "max-h-0 opacity-0 overflow-hidden"
                   }`}
                 >
-                  <Link
-                    href="#"
-                    className="flex items-center space-x-3 text-gray-600 hover:text-purple-600"
-                  >
-                    <Shirt className="w-5 h-5" />
-                    <span>Clothing</span>
-                  </Link>
-                  <Link
-                    href="#"
-                    className="flex items-center space-x-3 text-gray-600 hover:text-purple-600"
-                  >
-                    <Watch className="w-5 h-5" />
-                    <span>Watches</span>
-                  </Link>
-                  <Link
-                    href="#"
-                    className="flex items-center space-x-3 text-gray-600 hover:text-purple-600"
-                  >
-                    <Glasses className="w-5 h-5" />
-                    <span>Eyewear</span>
-                  </Link>
-                  <Link
-                    href="#"
-                    className="flex items-center space-x-3 text-gray-600 hover:text-purple-600"
-                  >
-                    <ShoppingBasket className="w-5 h-5" />
-                    <span>Groceries</span>
-                  </Link>
+                  {categories.map((item) => {
+                    const { icon, color } = categoryConfigs[item.name];
+                    const Icon = icon;
+
+                    return (
+                      <Link
+                        key={item.$id}
+                        href="/shop"
+                        className="flex items-center space-x-3 gap-3 text-gray-600 hover:text-purple-600 capitalize"
+                      >
+                        <Icon className={`${color} w-5 h-5`} />
+                        {item.name}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
               {navItems.map((item) => (
@@ -329,13 +325,6 @@ const Header = () => {
                   Sign out
                 </button>
               )}
-              <a
-                href="#"
-                className="flex items-center space-x-3 text-gray-600 hover:text-purple-600 transition-colors py-2"
-              >
-                <ShoppingCart className="w-5 h-5" />
-                <span>Cart (3)</span>
-              </a>
             </div>
           </div>
         </div>
