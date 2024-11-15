@@ -81,11 +81,17 @@ const Header = () => {
         const session = await account.get();
         setSession(session);
       } catch (error) {
-        console.error("No active session found:", error);
+        if (error.message.includes("missing scope")) {
+          console.warn("User is not authenticated. Redirecting to login.");
+          setSession(null);
+          router.push("/register");
+        } else {
+          console.error("Error fetching session:", error);
+        }
       }
     };
     getSession();
-  }, []);
+  }, [router]);
 
   const handleLogout = async () => {
     try {

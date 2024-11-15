@@ -9,7 +9,7 @@ import React, {
 } from "react";
 
 import { Permission, Query, Role } from "appwrite";
-import { database } from "@/lib/appwrite";
+import { account, database } from "@/lib/appwrite";
 
 export const ShopContext = createContext();
 
@@ -29,8 +29,21 @@ export const ShopProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const productsPerPage = 12;
+
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      try {
+        await account.get();
+        setIsAuthenticated(true);
+      } catch {
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuthentication();
+  }, []);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -130,8 +143,12 @@ export const ShopProvider = ({ children }) => {
   }, []);
 
   const toggleCart = useCallback(() => {
+    if (!isAuthenticated) {
+      alert("Please log in to access the cart.");
+      return;
+    }
     setIsCartOpen((prev) => !prev);
-  }, []);
+  }, [isAuthenticated]);
 
   const openQuickView = (product) => {
     setQuickViewProduct(product);
@@ -161,6 +178,7 @@ export const ShopProvider = ({ children }) => {
       productsPerPage,
       totalPages,
       currentProducts,
+      isAuthenticated,
       toggleFilter,
       toggleCart,
       openQuickView,
@@ -177,6 +195,7 @@ export const ShopProvider = ({ children }) => {
       quickViewProduct,
       sortBy,
       currentPage,
+      isAuthenticated,
       filters,
       searchTerm,
       products,

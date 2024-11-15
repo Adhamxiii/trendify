@@ -23,15 +23,15 @@ export default function RootLayout({ children }) {
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className}`}>
         <AuthProvider>
-          <CartProvider>
-            <OrdersProvider>
-              <ShopProvider>
+          <ShopProvider>
+            <CartProvider>
+              <OrdersProvider>
                 <Header />
                 {children}
                 <Footer />
-              </ShopProvider>
-            </OrdersProvider>
-          </CartProvider>
+              </OrdersProvider>
+            </CartProvider>
+          </ShopProvider>
         </AuthProvider>
       </body>
     </html>

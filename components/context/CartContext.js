@@ -1,13 +1,23 @@
 "use client";
 
 import React, { createContext, useState, useContext } from "react";
+import { ShopContext } from "./ShopContext";
+import { useRouter } from "next/navigation";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
+  const { isAuthenticated } = useContext(ShopContext);
   const [cartItems, setCartItems] = useState([]);
+  const router = useRouter();
 
   const addToCart = (item) => {
+    if (!isAuthenticated) {
+      alert("Please log in to add items to the cart.");
+      router.push("/register");
+
+      return;
+    }
     setCartItems((prevItems) => {
       const itemIndex = prevItems.findIndex((i) => i.id === item.$id);
       if (itemIndex >= 0) {
@@ -21,7 +31,9 @@ export const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = (itemId) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.$id !== itemId));
+    setCartItems((prevItems) =>
+      prevItems.filter((item) => item.$id !== itemId)
+    );
   };
 
   const increaseQuantity = (itemId) => {
