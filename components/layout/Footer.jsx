@@ -1,5 +1,4 @@
-'use client'
-
+"use client";
 import React from "react";
 import {
   Send,
@@ -12,10 +11,44 @@ import {
   Mail,
   ArrowRight,
 } from "lucide-react";
+import Link from "next/link";
 
+const socialLinks = [
+  { href: "/", icon: <Facebook className="w-5 h-5" /> },
+  { href: "/", icon: <Twitter className="w-5 h-5" /> },
+  { href: "/", icon: <Instagram className="w-5 h-5" /> },
+  { href: "/", icon: <Youtube className="w-5 h-5" /> },
+];
+
+const quickLinks = ["About Us", "Shop", "Categories", "Blog", "Contact"];
+
+const customerServiceLinks = [
+  "FAQ",
+  "Shipping Policy",
+  "Returns & Exchanges",
+  "Track Order",
+  "Payment Methods",
+];
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear(); // This can be moved to a constant if not changing
+
+  const renderLinks = (links) => (
+    <ul className="space-y-4">
+      {links.map((link, i) => (
+        <li key={i}>
+          <Link
+            href="/"
+            className="text-gray-400 hover:text-purple-400 transition-colors flex items-center group"
+          >
+            <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all" />
+            {link}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+
   return (
     <footer className="bg-gray-900 text-gray-300">
       <div className="bg-gradient-to-r from-purple-600 to-indigo-600">
@@ -48,7 +81,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           <div>
@@ -61,82 +93,29 @@ const Footer = () => {
               guarantee.
             </p>
             <div className="flex space-x-4">
-              <a
-                href="#"
-                className="text-gray-400 hover:text-purple-400 transition-colors"
-              >
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-purple-400 transition-colors"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-purple-400 transition-colors"
-              >
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a
-                href="#"
-                className="text-gray-400 hover:text-purple-400 transition-colors"
-              >
-                <Youtube className="w-5 h-5" />
-              </a>
+              {socialLinks.map(({ href, icon }, i) => (
+                <Link
+                  href={href}
+                  className="text-gray-400 hover:text-purple-400 transition-colors"
+                  key={i}
+                >
+                  {icon}
+                </Link>
+              ))}
             </div>
           </div>
-
-          {/* Quick Links */}
           <div>
             <h3 className="text-lg font-semibold text-white mb-6">
               Quick Links
             </h3>
-            <ul className="space-y-4">
-              {["About Us", "Shop", "Categories", "Blog", "Contact"].map(
-                (link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="text-gray-400 hover:text-purple-400 transition-colors flex items-center group"
-                    >
-                      <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all" />
-                      {link}
-                    </a>
-                  </li>
-                )
-              )}
-            </ul>
+            {renderLinks(quickLinks)}
           </div>
-
-          {/* Customer Service */}
           <div>
             <h3 className="text-lg font-semibold text-white mb-6">
               Customer Service
             </h3>
-            <ul className="space-y-4">
-              {[
-                "FAQ",
-                "Shipping Policy",
-                "Returns & Exchanges",
-                "Track Order",
-                "Payment Methods",
-              ].map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="text-gray-400 hover:text-purple-400 transition-colors flex items-center group"
-                  >
-                    <ArrowRight className="w-4 h-4 mr-2 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all" />
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            {renderLinks(customerServiceLinks)}
           </div>
-
-          {/* Contact Info */}
           <div>
             <h3 className="text-lg font-semibold text-white mb-6">
               Contact Us
@@ -159,32 +138,30 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-
-        {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-gray-800">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm mb-4 md:mb-0">
               © {currentYear} Trendify. All rights reserved.
             </p>
             <div className="flex space-x-6">
-              <a
-                href="#"
+              <Link
+                href="/"
                 className="text-gray-400 hover:text-purple-400 text-sm transition-colors"
               >
                 Privacy Policy
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/"
                 className="text-gray-400 hover:text-purple-400 text-sm transition-colors"
               >
                 Terms of Service
-              </a>
-              <a
-                href="#"
+              </Link>
+              <Link
+                href="/"
                 className="text-gray-400 hover:text-purple-400 text-sm transition-colors"
               >
                 Cookie Policy
-              </a>
+              </Link>
             </div>
           </div>
         </div>
