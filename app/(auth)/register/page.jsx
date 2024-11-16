@@ -220,7 +220,7 @@ export default function RegisterPage() {
               onClick={() => {
                 setIsLogin(!isLogin);
               }}
-              className="font-medium text-purple-600 hover:text-purple-500"
+              className="font-medium text-purple-600 hover:text-purple-500 cursor-pointer"
             >
               {!isLogin ? "Login" : "Register"}
             </span>
