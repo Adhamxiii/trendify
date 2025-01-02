@@ -1,7 +1,10 @@
 "use client";
 
 import { useAuth } from "@/components/context/AuthContext";
+import { account, ID } from "@/lib/appwrite";
 import { ArrowRight, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function RegisterPage() {
   const {
@@ -11,11 +14,63 @@ export default function RegisterPage() {
     isLogin,
     setIsLogin,
     errorMessage,
-    formData,
-    setFormData,
-    handleLogin,
-    handleRegister,
   } = useAuth();
+
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [user, setUser] = useState(null);
+
+  const route = useRouter();
+
+  useEffect(() => {
+    async function getUser() {
+      try {
+        const session = await account.getSession("current");
+        if (session) {
+          const currentUser = await account.get();
+          setUser(currentUser);
+        }
+      } catch (error) {
+        if (error.code === 401) {
+          console.warn("No authenticated user found.");
+        } else {
+          console.error("Unexpected error:", error.message);
+        }
+        setUser(null);
+      }
+    }
+    getUser();
+  }, []);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      await account.createEmailPasswordSession(email, password);
+      setUser(await account.get());
+      setEmail("");
+      setPassword("");
+      route.push("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      await account.create(ID.unique(), email, password, fullName);
+      await handleLogin(e);
+      console.log("Registered");
+      route.push("/");
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  if (user) {
+    route.push("/");
+  }
 
   return (
     <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
@@ -66,7 +121,10 @@ export default function RegisterPage() {
           </div>
 
           <form
-            onSubmit={isLogin ? handleLogin : handleRegister}
+            onSubmit={(e) => {
+              e.preventDefault();
+              isLogin ? handleLogin(e) : handleRegister(e);
+            }}
             className="space-y-4"
           >
             {errorMessage && <p className="text-red-500">{errorMessage}</p>}
@@ -84,10 +142,8 @@ export default function RegisterPage() {
                   placeholder="John Doe"
                   required
                   className="w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                 />
               </div>
             )}
@@ -104,10 +160,8 @@ export default function RegisterPage() {
                 placeholder="john@example.com"
                 required
                 className="w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -124,10 +178,8 @@ export default function RegisterPage() {
                   placeholder="••••••••"
                   required
                   className="w-full rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
                 <button
                   type="button"
